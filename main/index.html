@@ -1,158 +1,115 @@
 <!DOCTYPE html>
-<html lang="zh-CN"></html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>Visual Algorithm Programme</title>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <div class="navbar">
+        <div class="nav-item active" onclick="showCategory('sorting', this)">排序算法</div>
+        <div class="nav-item" onclick="showCategory('data-structure', this)">数据结构</div>
+    </div>
+
     <div class="header">
         <h1>算法可视化工具</h1>
     </div>
-    <div id="data-container">//JS找网页位置的坐标
+
+    <div id="data-container"></div>
+
+    <div id="sorting-section" class="category-section">
+        <div class="controls">
+            <button onclick="resetArray()">生成随机数组</button>
+            <button onclick="startBubbleSort()">开始冒泡排序</button>
+            <button onclick="startSelectionSort()">开始选择排序</button>
+            <button onclick="startInputSort()">开始插入排序</button>
+            
+            <div class="slider-box">
+                <span>演示速度：</span>
+                <input type="range" id="speed-slider" min="1" max="200" value="50">
+            </div>
+        </div>
     </div>
 
-   <div class="controls">
-    <button onclick="resetArray()">生成随机数组</button>
-    <button onclick="startBubbleSort()">开始冒泡排序</button>
-    <button onclick="startSelectionSort()">开始选择排序</button>
-    <button onclick="startInputSort()">开始插入排序</button>
-    <button onclick="testColor()">测试颜色变化</button>
-    
-    <div class="slider-box">
-        <span>演示速度：</span>
-        <input type="range" id="speed-slider" min="1" max="200" value="50">
+    <div id="data-structure-section" class="category-section" style="display: none;">
+        <div class="sub-navbar">
+            <button class="sub-nav-item active" onclick="showSubCategory('queue')">队列 (Queue)</button>
+            <button class="sub-nav-item" onclick="showSubCategory('stack')">栈 (Stack)</button>
+            <button class="sub-nav-item" onclick="showSubCategory('linked-list')">链表 (敬请期待)</button>
+        </div>
+
+        <div id="queue-visual" class="structure-content">
+            <div class="controls">
+                <input type="number" id="queue-input" placeholder="输入数值">
+                <button onclick="enqueue()">入队 (Enqueue)</button>
+                <button onclick="dequeue()">出队 (Dequeue)</button>
+                <button onclick="resetQueue()">清空队列</button>
+            </div>
+            <div class="queue-wrapper">
+                <span class="queue-label">出口 (Front)</span>
+                <div id="queue-container" class="visual-area"></div>
+                <span class="queue-label">入口 (Rear)</span>
+            </div>
+        </div>
+
+        <div id="stack-visual" class="structure-content" style="display: none;">
+            <p style="color: #888; margin-top: 20px;">栈的功能即将上线...</p>
+        </div>
     </div>
-</div>
+
     <script>
-        
-        
+        let isSorting = false;
+        let array = [];
+        let queueArray = [];
 
-        // 1. 先获取网页上的滑动条
         const speedSlider = document.getElementById('speed-slider');
+        const container = document.getElementById('data-container');
 
-        // 2. 重新定义 sleep，让它自己去读滑动条的数值
-        const sleep = () => {
-            // 延迟时间 = 201 - 滑动条的值
-            // 这样滑块往右拖（值变大），延迟就变小，速度就变快
-            let ms = 201 - speedSlider.value; 
+        const sleep = (ms_override) => {
+            let ms = ms_override || (201 - speedSlider.value); 
             return new Promise(resolve => setTimeout(resolve, ms));
         };
 
-        async function startBubbleSort(){
-                console.log("开始冒泡排序");
-                const bars=document.getElementsByClassName('bar');
-                for(let i=0;i<array.length-1;i++){
-                    for(let j=0;j<array.length-1-i;j++){
-                        bars[j].style.backgroundColor='green';
-                        bars[j+1].style.backgroundColor='green';
-                        if(array[j]>array[j+1]){
-                            let temp=array[j];
-                            array[j]=array[j+1];
-                            array[j+1]=temp;
-                            bars[j].style.height=array[j]+"px";
-                            bars[j+1].style.height=array[j+1]+"px";
-                        }
-                        await sleep();
-                        bars[j].style.backgroundColor="#00d2ff";
-                        bars[j+1].style.backgroundColor="#00d2ff";
-                    }
-                    bars[array.length-1-i].style.backgroundColor="green";
-
-                }
-                bars[0].style.backgroundColor="green";
+        // --- 分类切换逻辑 ---
+        function showCategory(type, element) {
+            isSorting = false; 
+            let items = document.getElementsByClassName('nav-item');
+            for (let item of items) {
+                item.classList.remove('active');
             }
+            element.classList.add('active');
 
-        async function startSelectionSort(){
-            console.log("开始选择排序");
-            const bars=document.getElementsByClassName('bar');
-            for(let i=0;i<array.length;i++){
-                let min=i;
-                bars[i].style.backgroundColor='green';
-                for(let j=i+1;j<array.length;j++){
+            document.getElementById('sorting-section').style.display = 'none';
+            document.getElementById('data-structure-section').style.display = 'none';
+            
+            container.style.display = (type === 'sorting') ? 'flex' : 'none';
+            document.getElementById(type + '-section').style.display = 'block';
 
-                    bars[j].style.backgroundColor = "lightgreen";
-                    await sleep();
+            if (type === 'sorting') resetArray();
+        }
 
-                    if(array[j]<array[min]){
-                      if (min!== i) {
-                        bars[min].style.backgroundColor = "#00d2ff";
-                      }
-                        min = j;
-                        bars[min].style.backgroundColor = "yellow"; // 新的“最矮候选人”
-                    } 
-                    else {
-                        bars[j].style.backgroundColor = "#00d2ff";
-                    }
-                    
-                }
-                if(min!==i){
-                    let temp=array[i];
-                    array[i]=array[min];
-                    array[min]=temp;
-
-                    bars[i].style.height=array[i]+'px';
-                    bars[min].style.height=array[min]+'px';
-
-                    bars[min].style.backgroundColor="#00d2ff";
-                }
-                bars[i].style.backgroundColor='green';
+        function showSubCategory(subType) {
+            let subItems = document.getElementsByClassName('sub-nav-item');
+            for (let item of subItems) {
+                item.classList.remove('active');
             }
-            
+            event.currentTarget.classList.add('active');
+
+            const contents = document.getElementsByClassName('structure-content');
+            for (let content of contents) {
+                content.style.display = 'none';
+            }
+            document.getElementById(subType + '-visual').style.display = 'block';
         }
 
-        async function testColor(){
-            let bars=document.getElementsByClassName('bar');
-            bars[0].style.backgroundColor='red';
-            await new Promise(resolve => setTimeout(resolve, 500))
-            bars[0].style.backgroundColor="#00d2ff";
-        }
-
-        async function startInputSort(){
-            console.log("开始插入排序");
-            const bars=document.getElementsByClassName('bar');
-            
-            for(let i=1;i<array.length;i++){
-                let j=0;
-                let key=array[i];
-                j=i-1;
-                bars[i].style.backgroundColor = "red";
-                await sleep(); 
-
-                while(j>=0&&array[j]>key){
-                    array[j+1]=array[j];
-
-                    bars[j + 1].style.height = array[j + 1] + "px";
-                    bars[j + 1].style.backgroundColor = "lightgreen"; 
-            
-                    j = j - 1;
-                    await sleep(); 
-                 }
-                
-                array[j+1]=key;
-                bars[j + 1].style.height = key + "px";
-
-                 
-                for (let k = 0; k <= i; k++) {
-                 bars[k].style.backgroundColor = "green";
-                }
-            }  
-            
-        }
-        
-
-        //数据驱动视图
-        let array=[];
-        const container=document.getElementById('data-container');
-        
-       function resetArray() {
-            container.innerHTML = ''; // 清空
+        // --- 排序逻辑 ---
+        function resetArray() {
+            isSorting = false;
+            container.innerHTML = '';
             array = [];
             for (let i = 0; i < 40; i++) {
                 let val = Math.floor(Math.random() * 350) + 10;
                 array.push(val);
-                
-                
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 bar.style.height = `${val}px`;
@@ -160,7 +117,140 @@
             }
         }
 
-        // 初始生成一次
+        async function startBubbleSort(){
+            if(isSorting) return;
+            isSorting=true;
+            const bars=document.getElementsByClassName('bar');
+            for(let i=0;i<array.length-1;i++){
+                for(let j=0;j<array.length-1-i;j++){
+                    if(!isSorting) return;
+                    bars[j].style.backgroundColor='green';
+                    bars[j+1].style.backgroundColor='green';
+                    if(array[j]>array[j+1]){
+                        let temp=array[j];
+                        array[j]=array[j+1];
+                        array[j+1]=temp;
+                        bars[j].style.height=array[j]+"px";
+                        bars[j+1].style.height=array[j+1]+"px";
+                    }
+                    await sleep();
+                    if(!isSorting) return;
+                    bars[j].style.backgroundColor="#00d2ff";
+                    bars[j+1].style.backgroundColor="#00d2ff";
+                }
+                bars[array.length-1-i].style.backgroundColor="green";
+            }
+            bars[0].style.backgroundColor="green";
+            isSorting=false;
+        }
+
+        async function startSelectionSort(){
+            if(isSorting) return;
+            isSorting=true;
+            const bars=document.getElementsByClassName('bar');
+            for(let i=0;i<array.length;i++){
+                let min=i;
+                bars[i].style.backgroundColor='green';
+                for(let j=i+1;j<array.length;j++){
+                    if(!isSorting) return;
+                    bars[j].style.backgroundColor = "lightgreen";
+                    await sleep();
+                    if(!isSorting) return;
+                    if(array[j]<array[min]){
+                        if (min!== i) bars[min].style.backgroundColor = "#00d2ff";
+                        min = j;
+                        bars[min].style.backgroundColor = "yellow";
+                    } else {
+                        bars[j].style.backgroundColor = "#00d2ff";
+                    }
+                }
+                if(min!==i){
+                    let temp=array[i];
+                    array[i]=array[min];
+                    array[min]=temp;
+                    bars[i].style.height=array[i]+'px';
+                    bars[min].style.height=array[min]+'px';
+                    bars[min].style.backgroundColor="#00d2ff";
+                }
+                bars[i].style.backgroundColor='green';
+            }
+            isSorting=false;
+        }
+
+        async function startInputSort(){
+            if (isSorting) return;
+            isSorting = true;
+            const bars=document.getElementsByClassName('bar');
+            for(let i=1;i<array.length;i++){
+                if(!isSorting) return;
+                let key=array[i];
+                let j=i-1;
+                bars[i].style.backgroundColor = "red";
+                await sleep(); 
+                if(!isSorting) return;
+                while(j>=0&&array[j]>key){
+                    array[j+1]=array[j];
+                    bars[j + 1].style.height = array[j + 1] + "px";
+                    bars[j + 1].style.backgroundColor = "lightgreen"; 
+                    j = j - 1;
+                    await sleep(); 
+                    if(!isSorting) return;
+                }
+                array[j+1]=key;
+                bars[j + 1].style.height = key + "px";
+                for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "green";
+            }  
+            isSorting=false;
+        }
+
+        // --- 队列逻辑 ---
+        function enqueue() {
+            const input = document.getElementById('queue-input');
+            const val = input.value;
+            if (val === '') return;
+            queueArray.push(val);
+            input.value = '';
+            renderQueue();
+        }
+
+        // 增加了动画支持的 dequeue
+        async function dequeue() {
+            if (queueArray.length === 0) {
+                alert("队列已经空啦！");
+                return;
+            }
+            
+            const qContainer = document.getElementById('queue-container');
+            const firstNode = qContainer.firstChild;
+
+            if (firstNode) {
+                // 添加 CSS 类触发滑出动画
+                firstNode.classList.add('exit-queue');
+                // 等待动画时间（与 CSS 里的 0.3s 对应）
+                await sleep(300);
+            }
+
+            queueArray.shift();
+            renderQueue();
+        }
+
+        function resetQueue() {
+            queueArray = [];
+            renderQueue();
+        }
+
+        function renderQueue() {
+            const qContainer = document.getElementById('queue-container');
+            qContainer.innerHTML = '';
+            queueArray.forEach((val, index) => {
+                const node = document.createElement('div');
+                node.className = 'queue-node';
+                node.innerText = val;
+                if (index === 0) node.style.backgroundColor = "#ffcc00"; 
+                qContainer.appendChild(node);
+            });
+        }
+
         resetArray();
     </script>
 </body>

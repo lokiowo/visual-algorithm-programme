@@ -1,71 +1,146 @@
+/* --- 基础全局样式 --- */
 body {
     background-color: #121212; 
     color: white; 
-    font-family: 'Segoe UI', sans-serif; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     display: flex; 
     flex-direction: column;
     align-items: center; 
-}
-.header{
-    margin-top:20px;
-    font-family:'Courier New', Courier, monospace;
-}
-/*柱子容器*/
-#data-container{
-    display:flex;
-    align-items:flex-end;/*让柱子从底部往上长*/
-    height:400px;
-    width:80%;
-    border-bottom:2px solid #333;
-    margin:50px 0;
-    gap:4px;
-}
-/*基础柱子样式*/
-.bar{
-    flex:1;
-    background-color:#00d2ff;
-    transition:0.1s all ease;/*动画过渡效果*/
+    margin: 0;
+    overflow-x: hidden;
 }
 
-.controls{
-    display:flex;/*让柱子自动横着排开*/
-    gap:10px;
-    margin-bottom:20px;
-    
+.header {
+    margin-top: 20px;
+    font-family: 'Courier New', Courier, monospace;
 }
-button{
-    padding:10px 20px;
-    cursor:pointer;
+
+/* --- 导航栏样式 --- */
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #1a1a1a;
+    border-bottom: 2px solid #333;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-item {
+    padding: 15px 30px;
+    cursor: pointer;
+    color: #888;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.nav-item:hover {
+    color: white;
+    background-color: #252525;
+}
+
+.nav-item.active {
+    color: #00d2ff;
+    border-bottom: 3px solid #00d2ff;
+}
+
+/* 子导航栏（数据结构内部分类） */
+.sub-navbar {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sub-nav-item {
+    background: #333;
+    color: #ccc;
+    font-size: 13px;
+    padding: 8px 18px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sub-nav-item.active {
+    background: #00d2ff;
+    color: #000;
+    border-color: #00d2ff;
+}
+
+/* --- 排序算法视图（柱子） --- */
+#data-container {
+    display: flex;
+    align-items: flex-end; /* 柱子从底部往上长 */
+    height: 400px;
+    width: 80%;
+    border-bottom: 2px solid #333;
+    margin: 40px 0;
+    gap: 4px;
+}
+
+.bar {
+    flex: 1;
+    background-color: #00d2ff;
+    transition: 0.1s all ease;
+}
+
+/* --- 按钮与控制栏 --- */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    flex-wrap: wrap; /* 自动换行防止溢出 */
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
     background: #333; 
     color: white; 
     border: 1px solid #555; 
     border-radius: 5px;
+    transition: 0.2s;
 }
 
-button:hover{
+button:hover {
     background: #555; 
+    border-color: #00d2ff;
 }
 
-/* 控制栏的样式 */
-.controls {
-    display: flex; /* 让按钮和滑块排成一行 */
-    align-items: center; /* 垂直居中 */
-    justify-content: center; /* 整体居中 */
-    gap: 15px; /* 元素之间的间距 */
-    padding: 20px;
-    background-color: #333; 
-}
-
-/* 滑块容器的样式 */
 .slider-box {
     display: flex;
     align-items: center;
-    color: white; /* 字体颜色设为白色 */
+    color: white;
     font-size: 14px;
+    margin-left: 10px;
 }
 
-/* 滑块本身的样式 */
 #speed-slider {
     cursor: pointer;
     margin-left: 10px;
 }
+
+/* 出队时的平滑滑出动画 */
+.exit-queue {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50px); /* 向左滑出 */
+    }
+}
+
+/* --- 数据结构视图（队列/栈） --- */
