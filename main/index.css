@@ -1,0 +1,47 @@
+body {
+    background-color: #121212; 
+    color: white; 
+    font-family: 'Segoe UI', sans-serif; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+}
+.header{
+    margin-top:20px;
+    font-family:'Courier New', Courier, monospace;
+}
+/*柱子容器*/
+#data-container{
+    display:flex;
+    align-items:flex-end;/*让柱子从底部往上长*/
+    height:400px;
+    width:80%;
+    border-bottom:2px solid #333;
+    margin:50px 0;
+    gap:4px;
+}
+/*基础柱子样式*/
+.bar{
+    flex:1;
+    background-color:#00d2ff;
+    transition:0.1s all ease;/*动画过渡效果*/
+}
+
+.controls{
+    display:flex;/*让柱子自动横着排开*/
+    gap:10px;
+    margin-bottom:20px;
+    
+}
+button{
+    padding:10px 20px;
+    cursor:pointer;
+    background: #333; 
+    color: white; 
+    border: 1px solid #555; 
+    border-radius: 5px;
+}
+
+button:hover{
+    background: #555; 
+}
