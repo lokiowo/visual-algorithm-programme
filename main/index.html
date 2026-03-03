@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="zh-CN"></html>//这里没看懂
+<html lang="zh-CN"></html>
 <head>
-    <meta charset="UTF-8">//设置字符编码
+    <meta charset="UTF-8">
     <title>Visual Algorithm Programme</title>
     <link rel="stylesheet" href="index.css">
 </head>
@@ -12,17 +12,32 @@
     <div id="data-container">//JS找网页位置的坐标
     </div>
 
-    <div class="controls">
-        <button onclick="resetArray()">生成随机数组</button>
-        <button onclick="startBubbleSort()">开始冒泡排序</button>
-        <button onclick="startSelectionSort()">开始选择排序</button>
-        <button onclick="testColor()">测试颜色变化</button>
+   <div class="controls">
+    <button onclick="resetArray()">生成随机数组</button>
+    <button onclick="startBubbleSort()">开始冒泡排序</button>
+    <button onclick="startSelectionSort()">开始选择排序</button>
+    <button onclick="startInputSort()">开始插入排序</button>
+    <button onclick="testColor()">测试颜色变化</button>
+    
+    <div class="slider-box">
+        <span>演示速度：</span>
+        <input type="range" id="speed-slider" min="1" max="200" value="50">
     </div>
+</div>
     <script>
         
         
 
-        const sleep=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+        // 1. 先获取网页上的滑动条
+        const speedSlider = document.getElementById('speed-slider');
+
+        // 2. 重新定义 sleep，让它自己去读滑动条的数值
+        const sleep = () => {
+            // 延迟时间 = 201 - 滑动条的值
+            // 这样滑块往右拖（值变大），延迟就变小，速度就变快
+            let ms = 201 - speedSlider.value; 
+            return new Promise(resolve => setTimeout(resolve, ms));
+        };
 
         async function startBubbleSort(){
                 console.log("开始冒泡排序");
@@ -38,7 +53,7 @@
                             bars[j].style.height=array[j]+"px";
                             bars[j+1].style.height=array[j+1]+"px";
                         }
-                        await sleep(50);
+                        await sleep();
                         bars[j].style.backgroundColor="#00d2ff";
                         bars[j+1].style.backgroundColor="#00d2ff";
                     }
@@ -57,7 +72,7 @@
                 for(let j=i+1;j<array.length;j++){
 
                     bars[j].style.backgroundColor = "lightgreen";
-                    await sleep(50);
+                    await sleep();
 
                     if(array[j]<array[min]){
                       if (min!== i) {
@@ -89,9 +104,42 @@
         async function testColor(){
             let bars=document.getElementsByClassName('bar');
             bars[0].style.backgroundColor='red';
-            await sleep(500);
+            await new Promise(resolve => setTimeout(resolve, 500))
             bars[0].style.backgroundColor="#00d2ff";
         }
+
+        async function startInputSort(){
+            console.log("开始插入排序");
+            const bars=document.getElementsByClassName('bar');
+            
+            for(let i=1;i<array.length;i++){
+                let j=0;
+                let key=array[i];
+                j=i-1;
+                bars[i].style.backgroundColor = "red";
+                await sleep(); 
+
+                while(j>=0&&array[j]>key){
+                    array[j+1]=array[j];
+
+                    bars[j + 1].style.height = array[j + 1] + "px";
+                    bars[j + 1].style.backgroundColor = "lightgreen"; 
+            
+                    j = j - 1;
+                    await sleep(); 
+                 }
+                
+                array[j+1]=key;
+                bars[j + 1].style.height = key + "px";
+
+                 
+                for (let k = 0; k <= i; k++) {
+                 bars[k].style.backgroundColor = "green";
+                }
+            }  
+            
+        }
+        
 
         //数据驱动视图
         let array=[];

@@ -45,3 +45,27 @@ button{
 button:hover{
     background: #555; 
 }
+
+/* 控制栏的样式 */
+.controls {
+    display: flex; /* 让按钮和滑块排成一行 */
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 整体居中 */
+    gap: 15px; /* 元素之间的间距 */
+    padding: 20px;
+    background-color: #333; 
+}
+
+/* 滑块容器的样式 */
+.slider-box {
+    display: flex;
+    align-items: center;
+    color: white; /* 字体颜色设为白色 */
+    font-size: 14px;
+}
+
+/* 滑块本身的样式 */
+#speed-slider {
+    cursor: pointer;
+    margin-left: 10px;
+}
