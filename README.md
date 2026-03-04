@@ -8,12 +8,18 @@ html；css；JavaScript
 了解算法；
 旨在于让算法学习变得更加轻松便捷
 ## 使用界面
+# 排序部分
 选择排序：
+<<<<<<< HEAD
 ![选择排序](image-example/demo.png)
 冒泡排序：
 ![冒泡排序](image-example/image.png)
 插入排序：
 ![插入排序](image-example/adding%20pasted%20.png)
 
+# 数据结构部分
+已开发队列的可视化。
+
 
 ## 后续功能会加入更多的功能，尽可能将所有算法做到可视化。
+=======
